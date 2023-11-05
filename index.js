@@ -24,26 +24,31 @@ async function run() {
   try {
     await client.connect();
     const allJobsCollection = client.db('jobHubDB').collection('allJobs');
+    const myJobsCollection = client.db('jobHubDB').collection('myJobs');
 
     //Inser data into database
-    app.post('/api/v1/allJobs', async(req, res) => {
+    app.post('/allJobs', async(req, res) => {
         const body = req.body;
         const result = await allJobsCollection.insertOne(body);
         res.send(result);
     })
 
     //get data from database
-    app.get('/api/v1/allJobs', async(req, res) => {
+    app.get('/allJobs', async(req, res) => {
         let query = {}
-        const category = req.query.category;
-        if(category){
-            query.category = category;
+        const email = req.query.email;
+        if(email){
+            query = {email: email};
         }
         const result = await allJobsCollection.find(query).toArray()
         res.send(result);
     })
 
+    //update operation
+    app.put('/allJobs/:id', async(req, res) => {
+        const id = req.params.id;
 
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
