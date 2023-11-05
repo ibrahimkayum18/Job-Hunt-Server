@@ -34,7 +34,12 @@ async function run() {
 
     //get data from database
     app.get('/api/v1/allJobs', async(req, res) => {
-        const result = await allJobsCollection.find().toArray()
+        let query = {}
+        const category = req.query.category;
+        if(category){
+            query.category = category;
+        }
+        const result = await allJobsCollection.find(query).toArray()
         res.send(result);
     })
 
