@@ -24,13 +24,26 @@ async function run() {
   try {
     await client.connect();
     const allJobsCollection = client.db('jobHubDB').collection('allJobs');
-    const myJobsCollection = client.db('jobHubDB').collection('myJobs');
+    const applyedCollection = client.db('jobHubDB').collection('applyed');
 
     //Inser data into database
     app.post('/allJobs', async(req, res) => {
         const body = req.body;
         const result = await allJobsCollection.insertOne(body);
         res.send(result);
+    })
+
+    //applied job post in database
+    app.post('/applyed', async(req, res) => {
+      const body = req.body;
+      const result = applyedCollection.insertOne(body)
+      res.send(result);
+    })
+
+    //get data from data base
+    app.get('/applyed', async(req, res) => {
+      const result = await applyedCollection.find().toArray()
+      res.send(result)
     })
 
     //get data from database
