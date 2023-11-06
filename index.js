@@ -42,8 +42,13 @@ async function run() {
 
     //get data from data base
     app.get('/applyed', async(req, res) => {
-      const result = await applyedCollection.find().toArray()
-      res.send(result)
+      let query = {}
+        const email = req.query.email;
+        if(email){
+            query = {email: email};
+        }
+        const result = await applyedCollection.find(query).toArray()
+        res.send(result);
     })
 
     //get data from database
@@ -57,8 +62,16 @@ async function run() {
         res.send(result);
     })
 
-    //update operation
+    //get single Data operation
     app.get('/allJobs/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)}
+        const result = await allJobsCollection.findOne(query)
+        res.send(result)
+
+    })
+    //get single data for applyed job operation
+    app.get('/applyed/:id', async(req, res) => {
         const id = req.params.id;
         const query = {_id: ObjectId(id)}
         const result = await allJobsCollection.findOne(query)
@@ -92,6 +105,14 @@ async function run() {
 
     //Delete Jobs
     app.delete('/allJobs/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await allJobsCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    //Delete applyed Jobs
+    app.delete('/applyed/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await allJobsCollection.deleteOne(query)
