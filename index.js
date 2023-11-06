@@ -53,6 +53,7 @@ async function run() {
 
     })
 
+    //Update Jobs
     app.put('/allJobs/:id',async(req,res) => {
       const id = req.params.id;
       const data = req.body;
@@ -75,6 +76,17 @@ async function run() {
       const result = await allJobsCollection.updateOne(query, UpdateData, option);
       res.send(result)
     })
+
+    //Delete Jobs
+    app.delete('/allJobs/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await allJobsCollection.deleteOne(query)
+      res.send(result)
+    })
+
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
