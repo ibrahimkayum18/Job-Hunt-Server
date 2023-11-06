@@ -45,13 +45,35 @@ async function run() {
     })
 
     //update operation
-    app.put('/allJobs/:id', async(req, res) => {
+    app.get('/allJobs/:id', async(req, res) => {
         const id = req.params.id;
         const query = {_id: ObjectId(id)}
-        const body = req.body;
         const result = await allJobsCollection.findOne(query)
         res.send(result)
 
+    })
+
+    app.put('/allJobs/:id',async(req,res) => {
+      const id = req.params.id;
+      const data = req.body;
+      const query = {_id: new ObjectId(id)}
+      const option = {upsert: true}
+      const UpdateData = {
+        $set: {
+          jobPhoto:data.jobPhoto,
+          jobTitle:data.jobTitle,
+          userName:data.userName,
+          category:data.category,
+          jobDescription:data.jobDescription,
+          salary:data.salary,
+          postingDate:data.postingDate,
+          jobApplicantsNumber:data.jobApplicantsNumber,
+          email:data.email,
+          applicationDeadline:data.applicationDeadline
+        }
+      }
+      const result = await allJobsCollection.updateOne(query, UpdateData, option);
+      res.send(result)
     })
 
     await client.db("admin").command({ ping: 1 });
