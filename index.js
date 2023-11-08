@@ -1,14 +1,18 @@
 const express = require('express')
 const cors = require('cors');
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 const app = express()
-require('dotenv').config()
+
 const port = process.env.PORT || 5000;
 
 app.use(cors({
   origin: [
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://job-hub-c6b58.web.app',
+    'https://job-hub-c6b58.firebaseapp.com/'
   ],
   credentials:true
 }))
@@ -28,8 +32,8 @@ const client = new MongoClient(uri, {
   }
 });
 
-const verifyToken = async(req, res, next ) => {
-  const token = req.cookies?.token;
+const verifyToken = (req, res, next ) => {
+  const token = req?.cookies?.token;
   console.log(token);
   if(!token){
     return res.status(401).send({message: 'Unaothorized access'})
@@ -52,11 +56,13 @@ async function run() {
     //jwt
     app.post('/jwt', async(req, res) => {
       const user = req.body;
-console.log(user);
+// console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1hr'})
       res.cookie('token',token, {
         httpOnly:true,
-        secure: false,
+        secure: true,
+        sameSite:'none'
+
       })
       .send({success: true})
     })
@@ -78,11 +84,9 @@ console.log(user);
     //get data from data base
     app.get('/applyed',verifyToken, async(req, res) => {
       let query = {}
+      // console.log(req.query.email);
         const email = req.query.email;
-        // if(email !== req.user.email){
-        //   return res.status(403).send({message: 'forbidden access'})
-        // }
-        console.log(req.user)
+
         if(email){
             query = {email: email};
         }
@@ -161,7 +165,7 @@ console.log(user);
     })
 
     //Delete applyed Jobs
-    app.delete('/applyed/:id', async(req, res) => {
+    app.delete('/applyed/:id',verifyToken, async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await applyedCollection.deleteOne(query)
