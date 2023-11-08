@@ -61,11 +61,11 @@ async function run() {
       res.cookie('token',token, {
         httpOnly:true,
         secure: true,
-        sameSite:'none'
-
+        sameSite:'none',
       })
       .send({success: true})
     })
+    
 
     //Inser data into database
     app.post('/allJobs', async(req, res) => {
@@ -96,9 +96,6 @@ async function run() {
 
     //get data from database
     app.get('/allJobs', async(req, res) => {
-      // if(req.query.email !== req.user.email){
-      //   return res.status(403).send({message: 'forbidden access'})
-      // }
         let query = {}
         const email = req.query.email;
         if(email){
