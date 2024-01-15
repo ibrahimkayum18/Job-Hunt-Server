@@ -32,20 +32,20 @@ const client = new MongoClient(uri, {
   }
 });
 
-const verifyToken = (req, res, next ) => {
-  const token = req?.cookies?.token;
-  console.log(token);
-  if(!token){
-    return res.status(401).send({message: 'Unaothorized access'})
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if(err){
-      return res.status(401).send({message: 'Unaothorized access'})
-    }
-    req.user = decoded;
-    next()
-  })
-}
+// const verifyToken = (req, res, next ) => {
+//   const token = req?.cookies?.token;
+//   console.log(token);
+//   if(!token){
+//     return res.status(401).send({message: 'Unaothorized access'})
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//     if(err){
+//       return res.status(401).send({message: 'Unaothorized access'})
+//     }
+//     req.user = decoded;
+//     next()
+//   })
+// }
 
 async function run() {
   try {
@@ -54,17 +54,17 @@ async function run() {
     const applyedCollection = client.db('jobHubDB').collection('applyed');
 
     //jwt
-    app.post('/jwt', async(req, res) => {
-      const user = req.body;
-// console.log(user);
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'2hr'})
-      res.cookie('token',token, {
-        httpOnly:true,
-        secure: true,
-        sameSite:'none',
-      })
-      .send({success: true})
-    })
+//     app.post('/jwt', async(req, res) => {
+//       const user = req.body;
+// // console.log(user);
+//       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'2hr'})
+//       res.cookie('token',token, {
+//         httpOnly:true,
+//         secure: true,
+//         sameSite:'none',
+//       })
+//       .send({success: true})
+//     })
     
 
     //Inser data into database
@@ -162,7 +162,7 @@ async function run() {
     })
 
     //Delete applyed Jobs
-    app.delete('/applyed/:id',verifyToken, async(req, res) => {
+    app.delete('/applyed/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await applyedCollection.deleteOne(query)
